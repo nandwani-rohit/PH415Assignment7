@@ -1,44 +1,17 @@
 //radius of the circular table = R
-let R;
-let N;
-let pellets = [];
-let epsilon;
-let v_default;
-let r_default;
-let c_default;
-let origin_x;
-let origin_y;
-let started;
-let paused;
-let onceCreated;
-let marked;
-let start_button;
-let pause_button;
-let end_button;
-let t1, t2, t3, t4, t5, t6, t7;
-let r_input;
-let N_input;
-let mark_input;
-let display_p, display_v;
+let R, N, pellets = [], epsilon, v_default, r_default, c_default, origin_x, origin_y, started, paused, onceCreated, marked, start_button, pause_button, end_button, r_percent, r_input, N_input, mark_input, display_p, display_v, canva, display_precision;
 
 function setup() 
 {
-  let canva = createCanvas(windowWidth, windowHeight);
+  canva = createCanvas(windowWidth, windowHeight);
   canva.style('display', 'block');
   epsilon = 1;
+  display_precision = 3;
 
-  if (width > height)
-  {
-    R = min(width * .4, height * .45) * .9;
-    origin_x = .4 * width;
-    origin_y = .55 * height;
-  }
-  else 
-  {
-    R = min(width * .5, height * .35) * .9;
-    origin_x = width * .5;
-    origin_y = height * .65;
-  }
+  // Assuming horizontal mode for "now"
+  R = min(width * 30/100, height * 50/100) * 95/100;
+  origin_x = width * 30/100;
+  origin_y = height * 50/100;
 
   createStuff();
 
@@ -56,8 +29,6 @@ function setup()
   {
     v_default = 5 * v_input.value() * R / 288;
   }
-
-
 
   pellets = [];
   c_default = color(130);
@@ -82,7 +53,6 @@ function setup()
 
   started = false;
   paused = false;
-  // noLoop();
 }
 
 function createStuff()
@@ -90,73 +60,23 @@ function createStuff()
 
   if (onceCreated == undefined)
   {
-    start_button = createButton('✔️ START');
+
+    start_button = select('#startbutton');
     start_button.mousePressed(start);
-    start_button.position(width*.67, height*.62);
 
-    pause_button = createButton('▶️⏸️ PAUSE');
+    pause_button = select('#pausebutton');
     pause_button.mousePressed(pause);
-    pause_button.position(width*.75, height*.62);
 
-    end_button = createButton('🔴 END');
+    end_button = select('#endbutton');
     end_button.mousePressed(end);
-    end_button.position(width*.84, height*.62);
 
-    N_input = createInput('50');
-    N_input.position(width*.8, height*.273);
-    N_input.size(30);
-
-    mark_input = createInput('1');
-    mark_input.position(width*.77, height*.503);
-    mark_input.size(30);
-
-    r_input = createInput('1');
-    r_input.position(width*.87, height*.323);
-    r_input.size(30);
-
-    v_input = createInput('1');
-    v_input.position(width*.77, height*.413);
-    v_input.size(30);
-
-    t1 = createP('Choose the parameters for simulation :');
-    t1.position(width*.65, height*.16);
-    t1.id('t1');
-
-    t2 = createP('Number of pellets, N &nbsp;&nbsp;( >= 1) :');
-    t2.position(width*.63, height*.25);
-    t2.id('t2');
-
-    t3 = createP('Relative radius of each pellet, r ( >= 0.1) :');
-    t3.position(width*.63, height*.3);
-    t3.id('t3');
-
-    t4 = createP('(r = 3.4 % of R)');
-    t4.position(width*.7, height*.34);
-    t4.id('t4');
-
-    t5 = createP('Initial Top Speed, u :');
-    t5.position(width*.63, height*.39);
-    t5.id('t5');
-
-    t6 = createP('(each particle gets a random initial speed between -u and u)');
-    t6.position(width*.61, height*.43);
-    t6.id('t6');
-
-    t7 = createP('Marked Particle (1-N) :');
-    t7.position(width*.63, height*.48);
-    t7.id('t7');
-
-    let t8 = createP('(position and velocity will be shown real time)');
-    t8.position(width*.64, height*.52);
-    t8.id('t8');
-
-    display_p = createP('');
-    display_p.position(width*.67, height*.7);
-    display_p.id('display_p');
-
-    display_v = createP('');
-    display_v.position(width*.67, height*.77);
-    display_v.id('display_v');
+    N_input = select('#Ninput');
+    mark_input = select('#minput');
+    r_input = select('#rinput');
+    v_input = select('#vinput');
+    r_percent = select('#rinputsub');
+    display_p = select('#pdisplay');
+    display_v = select('#vdisplay');
 
     onceCreated = true;
     N = 50;
@@ -171,7 +91,6 @@ function start()
   if (started == false)
   {
     setup();
-    // loop();
     started = true;
   }
 }
@@ -210,33 +129,14 @@ function draw()
 
   if (!isNaN(float(r_input.value())))
   {
-    t4.html("(r = " + nfc(100*abs(r_input.value())/28.8,2) + " % of R)");
+    r_percent.html("(r = " + nfc(100*abs(r_input.value())/28.8,2) + " % of R)");
   }
 
-  display_p.html("position = &nbsp; ( " + nfc(pellets[marked].position.x,2) + ",&nbsp;&nbsp;" + nfc(pellets[marked].position.y,2) + " )");
-  display_v.html("velocity = &nbsp; ( " + nfc(pellets[marked].velocity.x,2) + ",&nbsp;&nbsp;" + nfc(pellets[marked].velocity.y,2) + " )");
-
-  // strokeWeight(2);
-  textSize(min(.07*height,width/20));
-  textAlign(CENTER, CENTER);
-
-  fill(255);
-  text('The  BuMpY  Life  of  p.a.r.t.i.c.l.e.s.', width/2,.05*height);
-  stroke(255);
-
-  // text(String(mouseX) + ", " + String(mouseY), width/5, .2*height);
-
-  // 2 horizontal lines below title
-  line(width*.2, .1*height, width*.8, .1*height);
-  line(width*.2, .11*height, width*.8, .11*height);
-
-  // vertical line [HORIZONTAL MODE]
-  line(origin_x + R + 10, .12*height, origin_x + R + 10, .99*height);  
-  
+  display_p.html("position = &nbsp; ( " + nfc(pellets[marked].position.x/R,display_precision) + "R,&nbsp;&nbsp;" + nfc(pellets[marked].position.y/R,display_precision) + "R )");
+  display_v.html("velocity = &nbsp; ( " + nfc(pellets[marked].velocity.x/v_default,display_precision) + "u,&nbsp;&nbsp;" + nfc(pellets[marked].velocity.y/v_default,display_precision) + "u )");  
 
   translate(origin_x, origin_y);
   scale(1, -1);
-
 
   stroke(0);
   fill(255);
